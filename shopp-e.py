@@ -25,7 +25,7 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     }}
     """
     response = client.chat.completions.create(
-        model="gpt-4-turbo",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that generates structured meal plans and budgets."},
             {"role": "user", "content": prompt}
