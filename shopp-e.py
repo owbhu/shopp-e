@@ -49,19 +49,38 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     - Avoid the following restrictions: {restrictions}.
     - Start with the ingredients on hand: {ingredients}.
     - Feel free to suggest new complementary ingredients to make creative and interesting meals.
+    - For each meal, provide a recipe with detailed instructions.
     - Provide the response in this structured JSON format:
     {{
         "meal_plan": {{
             "day_1": {{
-                "breakfast": "description",
-                "lunch": "description",
-                "dinner": "description"
+                "breakfast": {{
+                    "name": "name of the dish",
+                    "recipe": "recipe instructions"
+                }},
+                "lunch": {{
+                    "name": "name of the dish",
+                    "recipe": "recipe instructions"
+                }},
+                "dinner": {{
+                    "name": "name of the dish",
+                    "recipe": "recipe instructions"
+                }}
             }},
             ...
             "day_7": {{
-                "breakfast": "description",
-                "lunch": "description",
-                "dinner": "description"
+                "breakfast": {{
+                    "name": "name of the dish",
+                    "recipe": "recipe instructions"
+                }},
+                "lunch": {{
+                    "name": "name of the dish",
+                    "recipe": "recipe instructions"
+                }},
+                "dinner": {{
+                    "name": "name of the dish",
+                    "recipe": "recipe instructions"
+                }}
             }}
         }},
         "shopping_list": ["new ingredients required for the meal plan"],
@@ -105,9 +124,9 @@ if st.button("Plan My Week"):
                 st.success("Here's your 7-day meal plan!")
                 for day, meals in meal_plan.items():
                     st.write(f"**{day.capitalize()}**")
-                    st.write(f"- 🥞 **Breakfast**: {meals['breakfast']}")
-                    st.write(f"- 🍴 **Lunch**: {meals['lunch']}")
-                    st.write(f"- 🍽️ **Dinner**: {meals['dinner']}")
+                    for meal_type, details in meals.items():
+                        with st.expander(f"🍴 {meal_type.capitalize()}: {details['name']}"):
+                            st.write(details['recipe'])
                     st.write("---")
 
                 # Calculate costs for new ingredients only
