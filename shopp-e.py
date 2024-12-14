@@ -41,6 +41,13 @@ def calculate_costs(shopping_list, prices_df):
             st.warning(f"Price for '{item}' not found. Skipping...")
     return total_cost
 
+# Function to clean and extract numeric cost
+def parse_cost(cost_string):
+    import re
+    # Extract numbers and decimal points from the string
+    cleaned_cost = re.sub(r"[^\d.]", "", cost_string)
+    return float(cleaned_cost) if cleaned_cost else 0.0
+
 # AI Function to generate meal plan
 def generate_meal_plan(preferences, restrictions, ingredients, budget):
     prompt = f"""
@@ -117,8 +124,7 @@ if st.button("Plan My Week"):
                 meal_plan = output.get("meal_plan", {})
                 shopping_list = output.get("shopping_list", [])
                 estimated_cost = output.get("total_estimated_cost", "0")
-                if isinstance(estimated_cost, str):
-                    estimated_cost = float(estimated_cost.replace("$", "").strip())  # Clean and convert to float
+                estimated_cost = parse_cost(estimated_cost)  # Clean and convert to float
 
                 # Display meal plan day by day
                 st.success("Here's your 7-day meal plan!")
