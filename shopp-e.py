@@ -19,13 +19,26 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     
     Provide the response in this JSON format:
     {{
-        "meal_plan": "description of the 7-day meal plan",
-        "shopping_list": ["list of ingredients"],
-        "estimated_cost": "total estimated cost of all ingredients"
+        "day_1": {{
+            "breakfast": "description",
+            "lunch": "description",
+            "dinner": "description"
+        }},
+        "day_2": {{
+            "breakfast": "description",
+            "lunch": "description",
+            "dinner": "description"
+        }},
+        ...
+        "day_7": {{
+            "breakfast": "description",
+            "lunch": "description",
+            "dinner": "description"
+        }}
     }}
     """
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo",  # Use GPT-3.5 Turbo
         messages=[
             {"role": "system", "content": "You are a helpful assistant that generates structured meal plans and budgets."},
             {"role": "user", "content": prompt}
@@ -50,16 +63,21 @@ if st.button("Plan My Week"):
         with st.spinner("Shopp-E is cooking up your plan..."):
             try:
                 output = generate_meal_plan(preferences, restrictions, ingredients, budget)
-                meal_plan = output.get("meal_plan", "No meal plan found.")
-                shopping_list = output.get("shopping_list", [])
                 estimated_cost = output.get("estimated_cost", "0")
                 estimated_cost = float(estimated_cost.replace("$", "").strip())  # Clean and convert to float
 
                 # Display meal plan
                 st.success("Here's your meal plan!")
-                st.text_area("Meal Plan", value=meal_plan, height=300)
+                st.write("### 7-Day Meal Plan")
+                for day, meals in output.items():
+                    st.write(f"**{day.capitalize()}**")
+                    st.write(f"- 🥞 **Breakfast**: {meals['breakfast']}")
+                    st.write(f"- 🍴 **Lunch**: {meals['lunch']}")
+                    st.write(f"- 🍽️ **Dinner**: {meals['dinner']}")
+                    st.write("---")
 
                 # Display shopping list
+                shopping_list = output.get("shopping_list", [])
                 st.write("### Shopping List")
                 for item in shopping_list:
                     st.write(f"- {item}")
