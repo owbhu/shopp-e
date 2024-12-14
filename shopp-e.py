@@ -36,7 +36,7 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
 
 # Streamlit UI
 st.title("Shopp-E: Your AI Meal Planner & Budget Tracker 🛒")
-st.image("https://via.placeholder.com/300x150.png?text=Shopp-E", use_column_width=True)
+st.image("https://via.placeholder.com/300x150.png?text=Shopp-E", use_container_width=True)
 
 # Collect user inputs
 preferences = st.text_input("What kind of meals do you like?", "Italian, quick, healthy")
@@ -52,7 +52,8 @@ if st.button("Plan My Week"):
                 output = generate_meal_plan(preferences, restrictions, ingredients, budget)
                 meal_plan = output.get("meal_plan", "No meal plan found.")
                 shopping_list = output.get("shopping_list", [])
-                estimated_cost = float(output.get("estimated_cost", "0"))
+                estimated_cost = output.get("estimated_cost", "0")
+                estimated_cost = float(estimated_cost.replace("$", "").strip())  # Clean and convert to float
 
                 # Display meal plan
                 st.success("Here's your meal plan!")
