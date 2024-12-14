@@ -27,19 +27,15 @@ carrot,1.0
 prices_df = pd.read_csv(StringIO(PRICE_DATA))
 
 # Function to calculate costs based on shopping list
-def extract_shopping_list_and_calculate_cost(ai_response, prices_df):
-    import re
-    # Extract shopping list items from the AI response
-    shopping_list = re.findall(r'- (\w+)', ai_response)  # Adjust regex for list format
+def calculate_costs(shopping_list, prices_df):
     total_cost = 0
-
     for item in shopping_list:
         item_price = prices_df.loc[prices_df['ingredient'].str.lower() == item.lower(), 'price']
         if not item_price.empty:
             total_cost += item_price.values[0]
         else:
             st.warning(f"Price for '{item}' not found. Skipping...")
-    return shopping_list, total_cost
+    return total_cost
 
 # AI Function to generate meal plan using GPT
 def generate_meal_plan(preferences, restrictions, ingredients, budget):
@@ -50,7 +46,7 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     Ingredients on hand: {ingredients}
     Stay within a budget of ${budget}.
     
-    Provide the response in this format:
+    Provide the response in this JSON format:
     {{
         "meal_plan": {{
             "day_1": {{
@@ -112,11 +108,11 @@ if st.button("Plan My Week"):
                     st.write("---")
 
                 # Calculate costs based on shopping list
-                extracted_list, total_cost = extract_shopping_list_and_calculate_cost(output.get("shopping_list", []), prices_df)
+                total_cost = calculate_costs(shopping_list, prices_df)
 
                 # Display shopping list
                 st.write("### Shopping List")
-                for item in extracted_list:
+                for item in shopping_list:
                     st.write(f"- {item}")
                 st.write(f"**Total Estimated Cost:** ${total_cost:.2f}")
 
