@@ -26,18 +26,22 @@ carrot,1.0
 # Convert price data to DataFrame
 prices_df = pd.read_csv(StringIO(PRICE_DATA))
 
-# Function to calculate the total cost of a shopping list
-def calculate_costs(shopping_list):
+# Function to calculate costs based on shopping list
+def extract_shopping_list_and_calculate_cost(ai_response, prices_df):
+    import re
+    # Extract shopping list items from the AI response
+    shopping_list = re.findall(r'- (\w+)', ai_response)  # Adjust regex for list format
     total_cost = 0
+
     for item in shopping_list:
-        item_price = prices_df.loc[prices_df['ingredient'] == item, 'price']
+        item_price = prices_df.loc[prices_df['ingredient'].str.lower() == item.lower(), 'price']
         if not item_price.empty:
             total_cost += item_price.values[0]
         else:
-            st.warning(f"Price for '{item}' not found, skipping...")
-    return total_cost
+            st.warning(f"Price for '{item}' not found. Skipping...")
+    return shopping_list, total_cost
 
-# AI Function to generate a meal plan using GPT
+# AI Function to generate meal plan using GPT
 def generate_meal_plan(preferences, restrictions, ingredients, budget):
     prompt = f"""
     Create a 7-day meal plan for breakfast, lunch, and dinner.
@@ -46,7 +50,7 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     Ingredients on hand: {ingredients}
     Stay within a budget of ${budget}.
     
-    Provide the response in this JSON format:
+    Provide the response in this format:
     {{
         "meal_plan": {{
             "day_1": {{
@@ -68,7 +72,7 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant that generates meal plans and budgets."},
+            {"role": "system", "content": "You are a helpful assistant that generates structured meal plans and budgets."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.7
@@ -107,12 +111,12 @@ if st.button("Plan My Week"):
                     st.write(f"- 🍽️ **Dinner**: {meals['dinner']}")
                     st.write("---")
 
-                # Calculate shopping list costs
-                total_cost = calculate_costs(shopping_list)
+                # Calculate costs based on shopping list
+                extracted_list, total_cost = extract_shopping_list_and_calculate_cost(output.get("shopping_list", []), prices_df)
 
                 # Display shopping list
                 st.write("### Shopping List")
-                for item in shopping_list:
+                for item in extracted_list:
                     st.write(f"- {item}")
                 st.write(f"**Total Estimated Cost:** ${total_cost:.2f}")
 
