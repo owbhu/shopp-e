@@ -21,12 +21,16 @@ eggs,2.5
 pasta,2.0
 tomato,1.0
 carrot,1.0
+spinach,2.0
+avocado,2.5
+tofu,3.0
+quinoa,4.0
+beef,6.0
+salmon,7.0
 """
-
-# Convert price data to DataFrame
 prices_df = pd.read_csv(StringIO(PRICE_DATA))
 
-# Function to calculate costs based on shopping list
+# Function to calculate costs for new ingredients
 def calculate_costs(shopping_list, prices_df):
     total_cost = 0
     for item in shopping_list:
@@ -37,16 +41,15 @@ def calculate_costs(shopping_list, prices_df):
             st.warning(f"Price for '{item}' not found. Skipping...")
     return total_cost
 
-# AI Function to generate meal plan using GPT
+# AI Function to generate meal plan
 def generate_meal_plan(preferences, restrictions, ingredients, budget):
     prompt = f"""
     Create a 7-day meal plan for breakfast, lunch, and dinner.
-    Preferences: {preferences}
-    Restrictions: {restrictions}
-    Ingredients on hand: {ingredients}
-    Stay within a budget of ${budget}.
-    
-    Provide the response in this JSON format:
+    - Base meals on preferences: {preferences}.
+    - Avoid the following restrictions: {restrictions}.
+    - Start with the ingredients on hand: {ingredients}.
+    - Feel free to suggest new complementary ingredients to make creative and interesting meals.
+    - Provide the response in this structured JSON format:
     {{
         "meal_plan": {{
             "day_1": {{
@@ -61,8 +64,8 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
                 "dinner": "description"
             }}
         }},
-        "shopping_list": ["list of required ingredients"],
-        "total_estimated_cost": "total cost as a float or string"
+        "shopping_list": ["new ingredients required for the meal plan"],
+        "total_estimated_cost": "estimated total cost for new ingredients"
     }}
     """
     response = client.chat.completions.create(
@@ -87,7 +90,7 @@ budget = st.number_input("What's your weekly grocery budget?", min_value=0, valu
 
 # Generate meal plan when button is clicked
 if st.button("Plan My Week"):
-    if preferences and restrictions and ingredients:
+    if preferences and restrictions:
         with st.spinner("Shopp-E is cooking up your plan..."):
             try:
                 # Generate meal plan and parse JSON response
@@ -107,14 +110,14 @@ if st.button("Plan My Week"):
                     st.write(f"- 🍽️ **Dinner**: {meals['dinner']}")
                     st.write("---")
 
-                # Calculate costs based on shopping list
+                # Calculate costs for new ingredients only
                 total_cost = calculate_costs(shopping_list, prices_df)
 
                 # Display shopping list
-                st.write("### Shopping List")
+                st.write("### Shopping List (New Ingredients)")
                 for item in shopping_list:
                     st.write(f"- {item}")
-                st.write(f"**Total Estimated Cost:** ${total_cost:.2f}")
+                st.write(f"**Total Estimated Cost for New Ingredients:** ${total_cost:.2f}")
 
                 # Budget analysis
                 remaining_budget = budget - total_cost
