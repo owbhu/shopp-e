@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import StringIO
 from openai import OpenAI
-import dotenv as load_dotenv
+from dotenv import load_dotenv
 import os
 
 load_dotenv()
