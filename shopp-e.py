@@ -7,6 +7,8 @@ import os
 
 api_key = st.secrets["OPENAI_API_KEY"]
 
+client = OpenAI(api_key=api_key)
+
 # Predefined ingredient prices (mock data for budget tracking)
 PRICE_DATA = """
 ingredient,price
