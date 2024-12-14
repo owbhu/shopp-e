@@ -54,8 +54,9 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     Create a 7-day meal plan for breakfast, lunch, and dinner.
     - Base meals on preferences: {preferences}.
     - Avoid the following restrictions: {restrictions}.
-    - Start with the ingredients on hand: {ingredients}.
+    - You can include the ingredients on hand: {ingredients}.
     - Feel free to suggest new complementary ingredients to make creative and interesting meals.
+    - Make sure the meals are well-structured and the recipe's are thorough
     - For each meal, provide a recipe with detailed instructions.
     - Provide the response in this structured JSON format:
     {{
@@ -97,7 +98,7 @@ def generate_meal_plan(preferences, restrictions, ingredients, budget):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant that generates structured meal plans and budgets."},
+            {"role": "system", "content": "You are a helpful assistant and chef that generates structured meal plans and budgets."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.7
