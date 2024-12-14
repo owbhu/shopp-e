@@ -5,9 +5,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-# Initialize OpenAI client with your API key
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = st.secrets["OPENAI_API_KEY"]
 
 # Predefined ingredient prices (mock data for budget tracking)
 PRICE_DATA = """
