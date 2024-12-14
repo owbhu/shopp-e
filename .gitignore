@@ -1,0 +1,33 @@
+# Environment variables (API keys, secrets, etc.)
+.env
+
+# Python virtual environment
+venv/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Logs
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Operating System files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+# IDE and Editor configurations
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Deployment files
+*.env
+*.streamlit/
+
+# Other
+*.bak
+*.swp
